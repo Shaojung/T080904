@@ -20,7 +20,7 @@ import java.net.URL;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class MainActivity extends AppCompatActivity {
-    TextView tv;
+    TextView tv, tv2;
     ImageView img;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         tv = (TextView) findViewById(R.id.textView);
+        tv2 = (TextView) findViewById(R.id.textView2);
         img = (ImageView) findViewById(R.id.imageView);
     }
 
@@ -78,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
     {
         String str;
         int length;
+        int fullsize;
         byte[] result;
         int total;
         @Override
@@ -89,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
                 conn.connect();
+                fullsize = conn.getContentLength();
                 InputStream stream = conn.getInputStream();
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 byte[] data = new byte[64];
@@ -97,6 +100,14 @@ public class MainActivity extends AppCompatActivity {
                 {
                     outputStream.write(data, 0, length);
                     total += length;
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            tv2.setText(total + "/" + fullsize);
+                        }
+                    });
+
                 };
                 result = outputStream.toByteArray();
 
