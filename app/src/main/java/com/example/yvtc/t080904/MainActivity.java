@@ -6,6 +6,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class MainActivity extends AppCompatActivity {
@@ -26,20 +33,32 @@ public class MainActivity extends AppCompatActivity {
 
     class GetData extends Thread
     {
+        String str;
         @Override
         public void run() {
             super.run();
-
+            String str_url = "http://data.ntpc.gov.tw/od/data/api/BF90FA7E-C358-4CDA-B579-B6C84ADC96A1?$format=json";
             try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
+                URL url = new URL(str_url);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.connect();
+                InputStream stream = conn.getInputStream();
+                BufferedReader br = new BufferedReader(new InputStreamReader(stream));
+                str = br.readLine();
+                br.close();
+                stream.close();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
-            Log.d("0809", "test1");
+
+
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    tv.setText("test2");
+                    tv.setText(str);
                 }
             });
 
